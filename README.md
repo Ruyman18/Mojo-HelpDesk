@@ -1,155 +1,108 @@
 # Mojo-HelpDesk
 
-# Mojo Helpdesk API v2 Documentation
+# Documentación de Mojo Helpdesk API v2
 
-Mojo Helpdesk is a ticket tracking software as a service (Saas). 
-It is developed by [Metadot](https://www.metadot.com). 
+Mojo Helpdesk es un software de seguimiento de tickets como servicio (Saas). Está desarrollado por Metadot.
+Este documento describe su API pública v2. La API v1 está en desuso.
 
-This document describes its public API v2. [API v1](https://github.com/mojohelpdesk/mojohelpdesk-api-doc/tree/master/v1) is deprecated.
+## Acerca de la API del servicio de asistencia de Mojo
 
-## About Mojo Helpdesk API
+La API de Mojo Helpdesk es fácil de usar. Permite a los desarrolladores de terceros crear aplicaciones web, de escritorio y de servidor o scripts simples que pueden comunicarse directamente con el servicio de asistencia técnica de Mojo. La comunicación se realiza mediante RESTful HTTPsolicitudes en JSONformato. XMLno es apoyado.
 
-Mojo Helpdesk API is easy to use. It allows
-3rd party developers to build web, desktop, and server applications or simple
-scripts that can communicate directly with the Mojo Helpdesk service.
-The communication is done by using `RESTful` `HTTP` requests in `JSON` format.
-`XML` is not supported.
+# Documentación de la API del servicio de asistencia técnica de Mojo
 
-# Mojo Helpdesk API Documentation
+## Autenticación
 
-## Authentication
+En el código a continuación, reemplace access_keyel parámetro con su clave de acceso (se puede encontrar en su perfil).
+La API de Mojo Helpdesk requiere una clave de acceso que se encuentra en el perfil de usuario de Mojo Helpdesk.
 
-In the code below, replace `access_key` parameter with your access key
-(it can be found in your profile).
+## Entradas
 
-The Mojo Helpdesk API requires an access key that is found
-in the Mojo Helpdesk user profile.
-
-## Tickets
-
-### List tickets
+### Listar entradas
 
     curl https://app.mojohelpdesk.com/api/v2/tickets?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-List of tickets API call supports **paging**, with optional parameters
-`per_page` and `page` parameters. `per_page` default value is 30, the maximum - 100:
-
     curl https://app.mojohelpdesk.com/api/v2/tickets?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&per_page=20\&page=3
 
-Sorting parameters:
 
-- **sort_by** - id, title, description, user_id, assigned_to_id, status_id,
-  ticket_form_id, priority_id, ticket_queue_id, company_id, rating, rated_on,
-  created_on, updated_on, status_changed_on, solved_on, assigned_on,
-  ticket_type_id, due_on, scheduled_on
-- **sort_order** - asc, desc
-
-Default sorting is by 'id', descending.
-
-### Show ticket
+### Mostrar boleto
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/88?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create ticket
+### Crear Ticket
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"title":"Test ticket","description":"Testing API for ticket creation","ticket_queue_id":"8","priority_id":"30"}'
     
-### Create ticket with user
+### Crear TicketCrear ticket con el usuario
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"title":"Test ticket","description":"Testing API for ticket creation","ticket_queue_id":"8","priority_id":"30", "user":{"email":"customer@someplace.com"}}'
 
-#### Additional parameters
+#### Parámetros adicionales
 
-- suppress_user_notification - Boolean when set to `true` will not send any email to notify for the ticket creation
+suprimir_usuario_notificación: booleano cuando se establece en trueno enviará ningún correo electrónico para notificar la creación del ticket
 
-### Update ticket
+### Actualizar boleto
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/113?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"title":"Test ticket API"}'
 
-### List of events for a ticket
+### Lista de eventos para un boleto
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/113/events?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Add tag to a ticket
+### Agregar etiqueta a un ticket
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/113/add_tag?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"tag_label":"Test"}'
 
-### Remove tag from a ticket
+### Eliminar etiqueta de un ticket
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/113/remove_tag?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"tag_label":"Test"}'
 
-### Destroy ticket
+### Destruir boleto
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/113?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### Ticket input fields
 
-- title - String
-- description - String
-- ticket_queue_id - Integer
-- priority_id - Integer
-  - 10 emergency
-  - 20 urgent
-  - 30 normal
-  - 40 low
-- status_id - Integer
-  - 10 new
-  - 20 in progress
-  - 30 on hold
-  - 40 information requested
-  - 50 solved
-  - 60 closed
-- ticket_type_id - Integer
-- assigned_to_id - Integer
-- ticket_form_id - Integer (if omitted, the default form would be used)
-- custom_field_XXX - String (where XXX is the name of the custom field,
-  i.e. custom_field_my_awesome_field)
-- user_id - Integer
-- cc - String
+## Comentarios de entradas
 
-## Ticket comments
-
-### Listing comments for a ticket
+### Listado de comentarios para un ticket
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/114/comments?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create comment
+### Crear comentario
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/88/comments?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"body":"New comment"}'
 
-### Comment input fields
+### Campos de entrada de comentarios
 
-- body - String
-- time_spent - Integer
-- cc - String
+- cuerpo - Cuerda
+- time_spent - Entero
+- cc - Cadena
 
-### Additional parameters
+### Notas del personal de entradas
 
 - suppress_user_notification - Boolean
 
-## Ticket staff notes
-
-### Listing staff notes for a ticket
+### Listado de notas del personal para un ticket
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/114/staff_notes?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create staff note
+### Crear nota para el personal
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/88/staff_notes?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"body":"New staff note"}'
 
-### Staff note input fields
+### Campos de entrada de notas del personal
 
-- body - String
-- cc - String
-- time_spent - Integer
+- cuerpo - Cuerda
+- cc - Cadena
+- time_spent - Entero
 
-## Ticket attachments
+## Archivos adjuntos de boletos
 
-### List attachments for a ticket
+### Enumerar archivos adjuntos para un ticket
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/211402/attachments?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Add attachment to a ticket
+### Agregar archivo adjunto a un ticket
 
     curl -F "file=@/home/user/my-file.txt" https://app.mojohelpdesk.com/api/v2/tickets/211402/attachments?staff_only=true\&access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST
 
@@ -157,375 +110,242 @@ Additional url params:
 
 - `staff_only` - true/false
 
-### Download an attachment
+### Descargar un archivo adjunto
 
     curl https://app.mojohelpdesk.com/api/v2/attachments/6422878?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Delete an attachment
+### Eliminar un archivo adjunto
 
     curl https://app.mojohelpdesk.com/api/v2/attachments/6422878?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-## Ticket search
-
-The last part of the urls is the search query - the format is the same as the
-one generated for the advanced search on the web interface. Note the usage of
-`%20` instead of space, `\&` instead of just `&`, `\(` instead of `(`, `\<`
-instead of `<`.
-
-Additional url params:
-
-- `sf` - sort field name (same as the web form search, i.e. priority_id)
-- `r` - 0/1 - reverse sort
-- `per_page` - results per page (default 10, min 10)
-- `page` - page number (default 1)
-
-### All open tickets
+### Todas las entradas abiertas
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/search?query=status.id:\(\<50\)\&sf=created_on\&r=0\&access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### All urgent open tickets
+### Todos los tickets abiertos urgentes
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/search?query=priority.id:\(\<=20\)%20AND%20status.id:\(\<50\)&sf=created_on\&r=0\&access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### All open tickets in certain queue
+### Todos los tickets abiertos en cierta cola
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/search?query=queue.id:19647%20AND%20status.id:\(\<50\)\&sf=created_on\&r=0\&access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### All tickets with due date
+### Todos los boletos con fecha de vencimiento
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/search?query=_exists_:due_on\&sf=created_on\&r=0\&access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of searchable fields
+## Colas de entradas
 
-- assignee.id
-- assignee.name
-- assignee.email
-- comments.id
-- comments.body
-- comments.created_on
-- comments.time_spent
-- comments.user.id
-- comments.user.name
-- comments.user.email
-- company.id
-- company.name
-- created_by.id
-- created_by.name
-- created_by.email
-- created_on
-- custom_fields
-- description
-- due_on
-- priority.id
-- priority.name
-- queue.id
-- queue.name
-- rating
-- rated_on
-- scheduled_on
-- solved_on
-- status.id
-- status.name
-- status_changed_on
-- type.id
-- type.name
-- title
-- updated_on
-
-#### Search notes
-
-- Format of all date fields is: 2013-11-11T21:37:02Z
-- To search for range of date/time (i.e. for created_on field):
-  - created_on:\[2013-11-11T21:37:02Z TO \*\] (for dates after the given)
-  - created_on:\[\* TO 2013-11-11T21:37:02Z\] (for dates before the given)
-  - created_on:\[2013-10-11T21:37:02Z TO 2013-11-11T21:37:02Z\] (for dates
-    between the given)
-  - Surround all string values with parentheses and double quotes like the
-    following examples:
-  - created_by.email:("myemail@somedomain.com")
-  - company.name:("My Company, Ltd")
-  - comments.user.email:("tester@mycompany.com")
-
-## Ticket queues
-
-### List of ticket queues
+### Lista de colas de boletos
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_queues?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of ticket queues supports paging, with optional parameters per_page and page parameters. If per_page is missing, by default it will return 30 items per page
+### La lista de colas de tickets admite paginación, con parámetros opcionales por_página y parámetros de página. Si falta per_page, de forma predeterminada devolverá 30 elementos por página
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_queues?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&per_page=10\&page=2
 
-### Show ticket queue
-
+### Mostrar cola de boletos
     curl https://app.mojohelpdesk.com/api/v2/ticket_queues/8?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create ticket queue
+### Crear cola de tickets
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/ticket_queues?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"name":"My queue"}'
 
-### Update ticket queue
+### Actualizar cola de tickets
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/ticket_queues/11?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"name":"My precious queue"}'
 
-### Destroy ticket queue
+### Destruir la cola de boletos
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_queues/10?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### Ticket queue input fields
+## Grupos (anteriormente llamados empresas)
 
-- name
-- email_alias
-- email_forward
-
-## Groups (formerly called companies)
-
-### List of groups
+### Lista de grupos
 
     curl https://app.mojohelpdesk.com/api/v2/groups?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of groups supports paging, with optional parameters per_page and page parameters. If per_page is missing, by default it will return 30 items per page
+### La lista de grupos admite paginación, con parámetros opcionales por_página y parámetros de página. Si falta per_page, de forma predeterminada devolverá 30 elementos por página
 
     curl https://app.mojohelpdesk.com/api/v2/groups?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&per_page=10\&page=2
 
-### Create group
+### Crea un grupo
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/groups?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"name":"My very own group"}'
 
-### Update group
+### Actualizar grupo
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/groups/1999?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"website-url":"www.google.com"}'
 
-### Destroy group
+### Destruir grupo
 
     curl https://app.mojohelpdesk.com/api/v2/groups/1999?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### Group input fields
+## Usuarios
 
-- name
-- primary_contact_id (ID of existing helpdesk user)
-- billing_contact_id (ID of existing helpdesk user)
-- support_level_id
-- support_status_id (0 - active, 1 - delinquent)
-- support_start_date
-- support_end_date
-- support_info_url
-- address
-- address2
-- city
-- state
-- zip
-- country
-- website_url
-- notes
-
-## Users
-
-### List of users
+### Lista de usuarios
 
     curl https://app.mojohelpdesk.com/api/v2/users?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of agents
+### Lista de agentes
 
     curl https://app.mojohelpdesk.com/api/v2/users/techs?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of users supports paging, with optional parameters per_page and page parameters. If per_page is missing, by default it will return 30 items per page
+### La lista de usuarios admite paginación, con parámetros opcionales por_página y parámetros de página. Si falta per_page, de forma predeterminada devolverá 30 elementos por página
 
     curl https://app.mojohelpdesk.com/api/v2/users?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&per_page=10\&page=2
 
-### Show user
+### Mostrar usuario
 
     curl https://app.mojohelpdesk.com/api/v2/users/1?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Get user by email address
+### Obtener usuario por dirección de correo electrónico
 
     curl https://app.mojohelpdesk.com/api/v2/users/get_by_email?email=someone@company.com&access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create user
+### Crear usuario
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/users?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&send_welcome_email=1 -X POST -d '{"email":"ivaylo+test@metadot.com","first_name":"Ivaylo","last_name":"Georgiev","company_id":"888","password":"111111"}'
 
-### Update user
+### Actualizar usuario
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/users/1999?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"user_notes":"Thats me again."}'
 
-### Destroy user
+### Destruir usuario
 
     curl https://app.mojohelpdesk.com/api/v2/users/1999?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### User input fields
+## Etiquetas de entradas
 
-- email
-- first_name
-- last_name
-- work_phone
-- cell_phone
-- home_phone
-- user_notes
-- company_id
-- password
-- is_active
-- role_id
-
-### role_id values
-
-- 10 - regular user
-- 15 - restricted technician
-- 20 - technician
-- 30 - manager
-- 35 - admin
-- 40 - owner
-
-## Ticket tags
-
-### List of ticket tags
+### Lista de etiquetas de entradas
 
     curl https://app.mojohelpdesk.com/api/v2/tags?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List of tags supports paging, with optional parameters per_page and page parameters. If per_page is missing, by default it will return 30 items per page
+### La lista de etiquetas admite la paginación, con parámetros opcionales por_página y parámetros de página. Si falta per_page, de forma predeterminada devolverá 30 elementos por página
 
     curl https://app.mojohelpdesk.com/api/v2/tags?access_key=9c9745101d12aed4d5a67d43747824451f9251d4\&per_page=10\&page=2
 
-### Show tag
+### Mostrar etiqueta
 
     curl https://app.mojohelpdesk.com/api/v2/tags/8?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create tag
+### Crear etiqueta
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tags?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"label":"Test","color":"#777777"}'
 
-### Update tag
+### Actualizar etiqueta
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tags/11?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"color":"#ff0000"}'
 
-### Destroy tag
+### Destruir etiqueta
 
     curl https://app.mojohelpdesk.com/api/v2/tags/10?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### Tag input fields
+## Tareas de tickets
 
-- label
-- color
-
-## Ticket tasks
-
-### List of ticket tasks
+### Lista de tareas del ticket
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/88/tasks?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create ticket task
+### Crear tarea de ticket
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/88/tasks?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"title":"Test"}'
 
-### Update ticket task
+### Actualizar tarea de ticket
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/tickets/88/tasks/777?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"notes":"Help"}'
 
-### Destroy ticket task
+### Destruir tarea de ticket
 
     curl https://app.mojohelpdesk.com/api/v2/tickets/88/tasks/777?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
 
-### Task input fields
+## Derechos de acceso a las colas de tickets
 
-- title
-- notes
-- is_completed
-
-## Access rights on ticket queues
-
-### List access rights for restricted agents
+### Lista de derechos de acceso para agentes restringidos
 
     curl https://app.mojohelpdesk.com/api/v2/access_rights/restricted_agents?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### List access rights for groups
+### Lista de derechos de acceso para grupos
 
     curl https://app.mojohelpdesk.com/api/v2/access_rights/groups?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Show access rights for a restricted agent
+### Mostrar derechos de acceso para un agente restringido
 
     curl https://app.mojohelpdesk.com/api/v2/users/1819458/access_rights?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Show access rights for a group
+### Mostrar derechos de acceso para un grupo
 
     curl https://app.mojohelpdesk.com/api/v2/groups/124147/access_rights?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Set access right for a restricted agent on a single queue
+### Establezca el derecho de acceso para un agente restringido en una sola cola
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/users/1819458/access_rights?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"ticket_queue_id":"94748","has_access":"true"}'
 
-### Set access right for a restricted agent on multiple queues
+### Establezca el derecho de acceso para un agente restringido en varias colas
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/users/1819458/access_rights/set?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"keys":["94748","15"],"has_access":"true"}'
 
-### Set access right for a group on a single queue
+### Establecer el derecho de acceso para un grupo en una sola cola
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/groups/124147/access_rights?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"ticket_queue_id":"94748","has_access":"true"}'
 
-### Set access right for a group on all queues
+### Establecer el derecho de acceso para un grupo en todas las colas
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/groups/124147/access_rights?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"has_access_to_all_ticket_queues":"true"}'
 
-### Set access right for a group on multiple queues
+### Establecer el derecho de acceso para un grupo en varias colas
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/groups/124147/access_rights/set?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"keys":["94748","15"],"has_access":"true"}'
 
 
-## Ticket forms
+## Formularios de entradas
 
-### List of ticket forms
+### Lista de formularios de ticket
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_forms?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
 List all forms with some basic information for them.
 
-### Show ticket forms
+### Mostrar formularios de ticket
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_forms/2700?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
 Returns all relevant information for a form, including the list of field attributes, and field rules.
 
-## Group tickets access for users
+## Acceso a tickets grupales para usuarios
 
-### List all groups tickets access for a user
+### Listar todos los accesos de tickets de grupos para un usuario
 
     curl https://app.mojohelpdesk.com/api/v2/users/14/group_access?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Get single group tickets access for a user
+### Obtenga acceso a tickets de un solo grupo para un usuario
 
     curl https://app.mojohelpdesk.com/api/v2/users/14/group_access/1234?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Set single group tickets access for a user
+### Establecer acceso a tickets de un solo grupo para un usuario
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/users/14/group_access/1234?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"access":"1"}'
 
-Possible access values:
+## Tipos de boletos
 
-- 0 - no access
-- 1 - full access
-- 2 - comment only
-
-## Ticket types
-
-### List of ticket types
+### Lista de tipos de boletos
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_types?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Show ticket type
+### Mostrar tipo de entrada
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_type/8?access_key=9c9745101d12aed4d5a67d43747824451f9251d4
 
-### Create ticket type
+### Crear tipo de boleto
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/ticket_types?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X POST -d '{"name":"My type"}'
 
-### Update ticket type
+### Actualizar tipo de boleto
 
     curl -H 'Content-type: application/json' https://app.mojohelpdesk.com/api/v2/ticket_types/11?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X PUT -d '{"name":"My precious type"}'
 
-### Destroy ticket type
+### Destruir tipo de ticket
 
     curl https://app.mojohelpdesk.com/api/v2/ticket_types/10?access_key=9c9745101d12aed4d5a67d43747824451f9251d4 -X DELETE
-
-### Ticket type input fields
-
-- name
+    
+Y esto sería todo o practicamente todo lo que se puede hacer en Mojo-HelpDesk.
